@@ -34,3 +34,13 @@ export const downloadVideo = async (videoUrl: string): Promise<string> => {
     throw new Error("Failed to download video");
   }
 };
+
+export const getYtInfo = async (videoUrl: string) => {
+  try {
+    const info = await ytdl.getInfo(videoUrl);
+    return info;
+  } catch (error) {
+    console.error("Error getting video info:", error);
+    throw new Error("Failed to get video info");
+  }
+};

@@ -4,26 +4,30 @@ const openai = new OpenAI({
   apiKey: process.env["OPENAI_API_KEY"],
 });
 
-export const optimizeMetadata = async (
-  metadata: string,
-  transcript: string
-) => {
+export const optimizeMetadata = async (metadata: any) => {
   const chatCompletion = await openai.chat.completions.create({
-    // enhance metadata using the old metadata and the transcript
+    // enhance metadata using the old metadata
+    response_format: { type: "json_object" },
+
     messages: [
       {
-        role: "user",
-        content: `Act live a youtube video content creator, working in the 
-        news field, so make the title and the description of the video be the most efficient for youtube according to this transcript: ${transcript}`,
+        role: "system",
+        content: `You are a helpful assistant that is optimizing metadata for a YouTube video title and description based on the current metadata provide your suggestions in JSON format like this
+          {title: "metadata.title", description: "metadata.description"}
+          `,
       },
-      { role: "assistant", content: metadata },
+      {
+        role: "user",
+        content: `The current title is: ${metadata.title} and the current description is: ${metadata.description}`,
+      },
+      {
+        role: "assistant",
+        content:
+          '{"title": "How to make the best pizza", "description": "In this video, I will show you how to make the best pizza in the world"}',
+      },
     ],
-    model: "gpt-3.5-turbo",
+    model: "gpt-3.5-turbo-1106",
   });
 
-  // Open in dev
-
-  // console.log(chatCompletion.choices[0].message.content);
-  // return as json
   return chatCompletion.choices[0].message.content;
 };
